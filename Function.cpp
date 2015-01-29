@@ -30,18 +30,55 @@ Function Variable::differentiate(Variable x) {
 }
 
 Function BinOp::differentiate(Variable x) {
-	if (op == ADD)
-		return BinOp(ADD, f1.differentiate(x), f2.differentiate(x));
-	if (op == SUB)
-		return BinOp(SUB, f1.differentiate(x), f2.differentiate(x));
-	if (op == MUL)
-		return BinOp(ADD, 
+	switch(op) {
+		case(ADD):
+			return BinOp(ADD, f1.differentiate(x), f2.differentiate(x));
+		case(SUB):
+			return BinOp(SUB, f1.differentiate(x), f2.differentiate(x));
+		case(MUL):
+			return BinOp(ADD, 
 				BinOp(MUL, f1.differentiate(x), f2),
 				BinOp(MUL, f1, f2.differentiate(x)));
-	if (op == DIV)
-		return BinOp(DIV, 
+		case(DIV):
+			return BinOp(DIV, 
 				BinOp(SUB,
 					BinOp(MUL, f2, f1.differentiate(x))
 					BinOp(MUL, f1, f2.differentiate(x)))
-				BinOp(EXP, f2, Constant(2)))
-	if (op == EXP)
+				BinOp(EXP, f2, Constant(2)));
+		case(EXP):
+			if (f2.constant(x))
+				return BinOp(MUL, f2, BinOp(MUL, f1.differentiate(x),
+					BinOp(EXP, f1, Constant(((Constant)f2).val - 1.0))));
+
+			else
+				return BinOp(MUL,
+					BinOp(EXP, f1, Binop(SUB, f2, Constant(1)))
+					BinOp(SUM,
+						BinOp(MUL, f2, f1.differentiate(x))
+						BinOp(MUL, f1,
+							BinOp(MUL, f2.differentiate(x),
+								UpOp(LN, f1)))));
+		case(LOG):
+			if (f1.constant(x))
+				return BinOp(DIV, f2.differentiate(x), 
+					BinOp(MUL, Constant(log(((Constant)f1).val)), f2));
+			else
+				return BinOp(DIV,
+					BinOP(SUB,
+						BinOp(DIV,
+							BinOp(MUL, f2.differentiate(x),
+								UnOp(LN, f1)), f2),
+						BinOp(DIV,
+							BinOp(MUL, f1.differentiate(x),
+								UnOp(LN, f2)), f1)),
+					BinOp(EXP,
+						BinOp(LOG, Constant(exp(1)), f1),
+						Constant(2)));
+		default:
+			return Constant(0);
+		}
+}
+
+Function UnOp::differentiate
+
+

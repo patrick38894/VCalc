@@ -3,7 +3,7 @@
 #include <string>
 using namespace std;
 
-enum OpCode { ADD, SUB, MUL, DIV, SIN, COS, TAN, ASIN, ACOS, ATAN, EXP };
+enum OpCode { ADD, SUB, MUL, DIV, SIN, COS, TAN, ASIN, ACOS, ATAN, EXP, LOG};
 
 
 class Function {
