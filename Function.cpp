@@ -1,3 +1,6 @@
+#include <Function.h>
+using namespace std;
+
 Function::Function() {
 	dimension = 1; //Default setting
 }
@@ -17,7 +20,6 @@ string BinOp::to_string() {
 	}
 }
 
-
 Function Constant::differentiate(Variable x) {
 	return Constant(0);
 }
@@ -28,6 +30,36 @@ Function Variable::differentiate(Variable x) {
 		return Constant(1);
 	return Constant(0);
 }
+
+/*
+Function Constant::reduce() {
+	return *this;
+}
+
+Function Variable::reduce() {
+	return *this;
+}
+
+Function UnOp::reduce() {
+	if (typeid(f) == typeid(Constant))
+		return Constant(eval(f.eval()));
+	else return *this;
+}
+
+Function BinOp::reduce() {
+	switch(op) {
+
+	case(ADD): {
+		vector<Function> terms
+		for (vector<Function>::iterator it = args.begin(); it != args.end(); ++it) {
+
+		}
+
+	}
+	
+
+}
+*/
 
 Function BinOp::differentiate(Variable x) {
 	switch(op) {
@@ -74,11 +106,35 @@ Function BinOp::differentiate(Variable x) {
 					BinOp(EXP,
 						BinOp(LOG, Constant(exp(1)), f1),
 						Constant(2)));
+		case(ATAN2) :
+			//stuff
 		default:
 			return Constant(0);
 		}
 }
 
-Function UnOp::differentiate
+Function UnOp::differentiate(Variable x) {
+
+	switch(op) {
+		case(SIN):
+			return BinOp(MUL, f.differentiate(x), UnOp(COS, f));
+		case(COS):
+			return BinOp(MUL, f.differentiate(x), BinOp(MUL, Constant(-1), UnOp(SIN, f)));
+		case(TAN):
+			return BinOp(MUL, f.differentiate(x), BinOp(EXP, UnOp(COS, f), Constant(-2)));
+		case(ASIN):
+			return BinOp(MUL, f.differentiate(x), BinOp(EXP, BinOp(SUB, Constant(1), BinOp(Exp, f, Constant(2))), Constant(-0.5)));
+		case(ACOS):
+			return BinOp(MUL, Constant(-1), BinOp(MUL, f.differentiate(x), BinOp(EXP, BinOp(SUB, Constant(1), BinOp(Exp, f, Constant(2))), Constant(-0.5))));
+		case(ACOS):
+			return BinOp(DIV, f.differentiate(x), BinOp(ADD, Constant(1), BinOp(Exp, f, Constant(2))));
+		case(LN):
+			return BinOp(DIV, f.differentiate(x), f);
+		default:
+			return Constant(0);
+	}
+}
+
+
 
 

@@ -1,6 +1,7 @@
 #include <math.h>
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 enum OpCode { ADD, SUB, MUL, DIV, SIN, COS, TAN, ASIN, ACOS, ATAN, EXP, LOG};
